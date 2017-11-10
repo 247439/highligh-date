@@ -1,4 +1,5 @@
 import DOMIterator from './DOMIterator';
+import {WEEK_NAMES_SHORT, WEEK_DAY_COLORS} from './constants';
 
 class Highlight {
     constructor(ctx) {
@@ -8,22 +9,13 @@ class Highlight {
          * @access protected
          */
         this.ctx = ctx;
-        /**
-         * Specifies if the current browser is a IE
-         * @type {boolean}
-         */
-        this.ie = false;
-        const ua = window.navigator.userAgent;
-        if(ua.indexOf("MSIE") > -1 || ua.indexOf("Trident") > -1) {
-            this.ie = true;
-        }
     }
 
     set opt(val) {
         this._opt = Object.assign({}, {
-            "element": "",
+            "element": "span",
             "className": "",
-            "exclude": [],
+            "exclude": ['[data-marked]'],
         }, val);
     }
 
@@ -93,6 +85,9 @@ class Highlight {
                     match[matchIdx] !== ""
                 ) {
                     let pos = match.index;
+                    const dateString = this.opt.getDay ? this.opt.getDay(match) : match[0];
+                    const dayOfWeek = new Date(dateString).getDay();
+
                     if(matchIdx !== 0) {
                         for(let i = 1; i < matchIdx; i++) {
                             pos += match[i].length;
@@ -101,8 +96,10 @@ class Highlight {
                     node = this.wrapRangeInTextNode(
                         node,
                         pos,
-                        pos + match[matchIdx].length
+                        pos + match[matchIdx].length,
+                        dayOfWeek
                     );
+                    // eachCb(node.previousSibling);
                     // reset index of last match as the node changed and the
                     // index isn't valid anymore http://tinyurl.com/htsudjd
                     regex.lastIndex = 0;
@@ -116,16 +113,24 @@ class Highlight {
         this.wrapMatches(regexp);
     }
 
-    wrapRangeInTextNode(node, start, end) {
+    wrapRangeInTextNode(node, start, end, dayOfWeek) {
         const hEl = !this.opt.element ? "mark" : this.opt.element,
             startNode = node.splitText(start),
             ret = startNode.splitText(end - start);
         let repl = document.createElement(hEl);
+        repl.setAttribute("data-marked", "true");
 
+        if (!isNaN(dayOfWeek)) {
+            repl.style.background = WEEK_DAY_COLORS[dayOfWeek];
+        }
         if(this.opt.className) {
             repl.setAttribute("class", this.opt.className);
         }
-        repl.textContent = startNode.textContent;
+        if (this.opt.addDay) {
+            repl.textContent = `${WEEK_NAMES_SHORT[dayOfWeek]}, ${startNode.textContent}`;
+        } else {
+            repl.textContent = startNode.textContent;
+        }
         startNode.parentNode.replaceChild(repl, startNode);
 
         return ret;
@@ -137,7 +142,7 @@ class Highlight {
      */
     unmark() {
         let sel = this.opt.element ? this.opt.element : "*";
-        sel += "[data-markjs]";
+        sel += "[data-marked]";
         if(this.opt.className) {
             sel += `.${this.opt.className}`;
         }

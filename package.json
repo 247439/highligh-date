@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "start": "node app.js",
-    "build": "webpack -p --config webpack.config.js"
+    "build": "webpack -p --config webpack.config.js --bail"
   },
   "dependencies": {},
   "devDependencies": {
