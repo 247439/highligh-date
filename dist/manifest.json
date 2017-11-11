@@ -10,6 +10,12 @@
     "http://*/*",
     "https://*/*"
   ],
+  "applications": {
+    "gecko": {
+      "id": "randeep@springsoftware.co.uk",
+      "strict_min_version": "45.0"
+    }
+  },
   "background": {
     "scripts": ["background.js"],
     "persistent": false
