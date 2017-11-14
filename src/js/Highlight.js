@@ -122,6 +122,7 @@ class Highlight {
 
         if (!isNaN(dayOfWeek)) {
             repl.style.background = WEEK_DAY_COLORS[dayOfWeek];
+            repl.style.color = (dayOfWeek == 5) ? '#000' : '#fff';
         }
         if(this.opt.className) {
             repl.setAttribute("class", this.opt.className);
