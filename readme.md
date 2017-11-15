@@ -8,10 +8,15 @@ $ npm install
 
 Run local server at 3000 port from /app folder for test regexp
 ```bash
-$ npm start
+$ npm run start
 ```
 
-Build minified js in /dist folder where other files for chrome extension
+Copy files from src/assets to /dist and build minified js in /dist folder where other files for chrome extension
 ```bash
-$ npm build
+$ npm run build
+```
+
+Zip files from /dist to highlight-dates.zip
+```bash
+$ npm run package
 ```
